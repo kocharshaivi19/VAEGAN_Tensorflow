@@ -5,6 +5,7 @@ from utils import CelebA
 import numpy as np
 import cv2
 from tensorflow.python.framework.ops import convert_to_tensor
+import sys
 
 TINY = 1e-8
 d_scale_factor = 0.25
@@ -188,7 +189,7 @@ class vaegan(object):
                     self.saver.save(sess , self.saved_model_path)
 
                 step += 1
-
+                sys.stdout.flush()
             save_path = self.saver.save(sess , self.saved_model_path)
             print ("Model saved in file: %s" % save_path)
 
