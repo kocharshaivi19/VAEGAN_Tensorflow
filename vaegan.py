@@ -32,14 +32,14 @@ class vaegan(object):
             # random_normal(shape=[self.batch_size , self.latent_dim])
         self.zp = tf.placeholder(tf.float32, [None, latent_dim])
             # .random_normal(shape=[None, self.latent_dim])
-        self.dataset = tf.data.Dataset.from_tensor_slices(
+        self.dataset = tf.contrib.data.Dataset.from_tensor_slices(
             convert_to_tensor(self.data_ob.train_data_list, dtype=tf.string))
         self.dataset = self.dataset.map(lambda filename : tuple(tf.py_func(self._read_by_function,
                                                                             [filename], [tf.double])), num_parallel_calls=16)
         self.dataset = self.dataset.repeat(100)
         self.dataset = self.dataset.apply(tf.contrib.data.batch_and_drop_remainder(batch_size))
 
-        self.iterator = tf.data.Iterator.from_structure(self.dataset.output_types, self.dataset.output_shapes)
+        self.iterator = tf.contrib.data.Iterator.from_structure(self.dataset.output_types, self.dataset.output_shapes)
         self.next_x = tf.squeeze(self.iterator.get_next())
         self.training_init_op = self.iterator.make_initializer(self.dataset)
 
