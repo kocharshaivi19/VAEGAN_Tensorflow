@@ -5,33 +5,41 @@ import scipy
 import scipy.misc
 from PIL import Image
 
-def load_data( data_dir, shape=None, box=None, need=6000, restrict=-1 ):
+def load_data( data_dir, shape=None, box=None, need=6000, restrict=-1, train=True):
     img_files = []
+    img_labels = []
+    count = 0
     for root,dirs,files in os.walk(data_dir):
         if len(files) == 0:
             continue
-        if len(img_files) <= need:
-            img_files.extend(map(lambda f: os.path.join(root, f), files))
-
-    arrs = []
-    if restrict < 0:
-        data_size = len(img_files)
-    else:
-        data_size = restrict
-
-    for f_name in img_files[:data_size]:
-        img = Image.open(f_name)
-        if not box == None:
-            img = img.crop(box)
-        if not shape == None:
-            img = img.resize(shape)
-        arr = np.asarray(img).astype(np.float32)
-        # arr = preprocess( arr )
-        arrs.append(arr)
-
-    arrs = np.asarray(arrs).astype(np.float32)
-
-    return arrs
+        for f in files:
+            img_files.extend([os.path.join(root, f)])
+            if train:
+                img_labels.extend([count])
+        count += 1
+    return np.asarray(img_files), np.asarray(img_labels).astype(np.int64)
+    # arrs = []
+    # if restrict < 0:
+    #     data_size = len(img_files)
+    # else:
+    #     data_size = restrict
+    #
+    # for f_name in img_files[:data_size]:
+    #     img = Image.open(f_name)
+    #     if not box == None:
+    #         img = img.crop(box)
+    #     if not shape == None:
+    #         img = img.resize(shape)
+    #     arr = np.asarray(img).astype(np.float32)
+    #     # arr = preprocess( arr )
+    #     arrs.append(arr)
+    #
+    # arrs = np.asarray(arrs).astype(np.float32)
+    # if train:
+    #     labels = np.asarray(img_labels).astype(np.int64)
+    #     return arrs, labels
+    # else:
+    #     return arrs
 
 
 def preprocess( arr ):
