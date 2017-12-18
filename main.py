@@ -12,7 +12,7 @@ flags.DEFINE_integer("latent_dim" , 128, "the dim of latent code")
 flags.DEFINE_integer("learn_rate_init" , 0.0003, "the init of learn rate")
 #Please set this num of repeat by the size of your datasets.
 # flags.DEFINE_integer("repeat", 10000, "the numbers of repeat for your datasets")
-flags.DEFINE_string("path", './data',
+flags.DEFINE_string("path", './data/',
 "for example, '/home/ubuntu/workspace/shaivi/VAEGAN_Tensorflow/train_lfw' is the directory of your celebA data")
 flags.DEFINE_integer("op", 0, "Training or Test")
 
