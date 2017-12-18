@@ -13,14 +13,10 @@ def conv2d(input_, output_dim,
 
         w = tf.get_variable('w', [k_h, k_w, input_.get_shape()[-1], output_dim],
                             initializer=tf.truncated_normal_initializer(stddev=stddev))
-        print "w: ", w
         conv = tf.nn.conv2d(input_, w, strides=[1, d_h, d_w, 1], padding='SAME')
-        print "conv: ", conv
         biases = tf.get_variable('biases', [output_dim], initializer=tf.constant_initializer(0.0))
-        print "bias: ", biases
         shape = tf.shape(conv)
         shape = tf.stack(shape)
-        print "cc shape: ", shape
         conv = tf.reshape(tf.nn.bias_add(conv, biases), shape)
 
         return conv
@@ -33,7 +29,6 @@ def de_conv(input_, output_shape,
         # filter : [height, width, output_channels, in_channels]
         w = tf.get_variable('w', [k_h, k_w, output_shape[-1], input_.get_shape()[-1]],
                             initializer=tf.random_normal_initializer(stddev=stddev))
-        print "outpt shap: ", output_shape
         shape = tf.stack(output_shape)
         try:
             deconv = tf.nn.conv2d_transpose(input_, w, output_shape=shape,
@@ -59,7 +54,6 @@ def fully_connect(input_, output_size, scope=None, stddev=0.02, bias_start=0.0, 
 
     matrix = tf.get_variable("Matrix", [shape[1], output_size], tf.float32,
                  tf.random_normal_initializer(stddev=stddev))
-    print "matrix: ", matrix
     bias = tf.get_variable("bias", [output_size],
       initializer=tf.constant_initializer(bias_start))
 

@@ -202,10 +202,10 @@ def main(_):
   ori_list , gen_list = read_image_list(file_path)
   ori_list.sort(compare)
   gen_list.sort(compare)
-  print gen_list
+  print (gen_list)
 
 
-  print ori_list
+  print (ori_list)
 
 
   for i in range(len(ori_list)):
@@ -223,12 +223,12 @@ def main(_):
       img1 = sess.run(decoded_image, feed_dict={input_img: img1_str})
       img2 = sess.run(decoded_image, feed_dict={input_img: img2_str})
 
-      print MultiScaleSSIM(img1, img2, max_val=255)
+      print (MultiScaleSSIM(img1, img2, max_val=255))
 
 
     score = score + MultiScaleSSIM(img1, img2, max_val=255)
 
-  print score/len(ori_list)
+  print (score/len(ori_list))
 
 
 if __name__ == '__main__':

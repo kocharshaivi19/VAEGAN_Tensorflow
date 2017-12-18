@@ -158,7 +158,6 @@ def read_image_list_file(category, is_test):
         flag = line.split('1 ', 41)[20]  # get the label for gender
         file_name = line.split(' ', 1)[0]
 
-        # print flag
         if flag == ' ':
 
             list_label.append(1)

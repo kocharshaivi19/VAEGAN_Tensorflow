@@ -32,9 +32,6 @@ class vaegan(object):
         print self.ep
         self.zp = tf.placeholder(tf.float32, [None, latent_dim])
             # .random_normal(shape=[None, self.latent_dim])
-        self.bs = tf.shape(self.images)[0]
-        print "batch_size", self.bs
-        print self.images.get_shape().as_list()
         # self.dataset = tf.data.Dataset.from_tensor_slices(
         #     convert_to_tensor(self.data_ob.train_data_list, dtype=tf.string))
         # self.dataset = self.dataset.map(lambda filename : tuple(tf.py_func(self._read_by_function,
@@ -193,7 +190,7 @@ class vaegan(object):
                 step += 1
 
             save_path = self.saver.save(sess , self.saved_model_path)
-            print "Model saved in file: %s" % save_path
+            print ("Model saved in file: %s" % save_path)
 
     def test(self, test_arr):
 
@@ -231,22 +228,22 @@ class vaegan(object):
                 scope.reuse_variables()
 
             conv1 = tf.nn.relu(conv2d(x_var, output_dim=32, name='dis_conv1'))
-            print "dis conv1: ", conv1
+            print ("dis conv1: ", conv1)
             conv2= tf.nn.relu(batch_normal(conv2d(conv1, output_dim=128, name='dis_conv2'), scope='dis_bn1', reuse=reuse))
-            print "dis conv2: ", conv2
+            print ("dis conv2: ", conv2)
             conv3= tf.nn.relu(batch_normal(conv2d(conv2, output_dim=256, name='dis_conv3'), scope='dis_bn2', reuse=reuse))
-            print "dis conv3: ", conv3
+            print ("dis conv3: ", conv3)
             conv4 = conv2d(conv3, output_dim=256, name='dis_conv4')
-            print "dis conv4: ", conv4
+            print ("dis conv4: ", conv4)
             middle_conv = conv4
             conv4= tf.nn.relu(batch_normal(conv4, scope='dis_bn3', reuse=reuse))
-            print "dis conv4: ", conv4
+            print ("dis conv4: ", conv4)
             conv4= tf.reshape(conv4, [tf.shape(conv4)[0], 4*4*256])
-            print "dis conv4 reshape: ", conv4
+            print ("dis conv4 reshape: ", conv4)
             fl = tf.nn.relu(batch_normal(fully_connect(conv4, output_size=256, scope='dis_fully1'), scope='dis_bn4', reuse=reuse))
-            print "fl: ", fl
+            print ("fl: ", fl)
             output = fully_connect(fl , output_size=1, scope='dis_fully2')
-            print "output: ", output
+            print ("output: ", output)
             return middle_conv, output
 
     def generate(self, z_var, reuse=False):
@@ -257,17 +254,17 @@ class vaegan(object):
                 scope.reuse_variables()
 
             d1 = tf.nn.relu(batch_normal(fully_connect(z_var, output_size=8*8*256, scope='gen_fully1'), scope='gen_bn1', reuse=reuse))
-            print "d1: ", d1
+            print ("d1: ", d1)
             d2 = tf.reshape(d1, [tf.shape(d1)[0], 8, 8, 256])
-            print "d2: ", d2
+            print ("d2: ", d2)
             d2 = tf.nn.relu(batch_normal(de_conv(d2, output_shape=[tf.shape(d2)[0], 16, 16, 256], name='gen_deconv2'), scope='gen_bn2', reuse=reuse))
-            print "d2: ", d2
+            print ("d2: ", d2)
             d3 = tf.nn.relu(batch_normal(de_conv(d2, output_shape=[tf.shape(d2)[0], 32, 32, 128], name='gen_deconv3'), scope='gen_bn3', reuse=reuse))
-            print "d3: ", d3
+            print ("d3: ", d3)
             d4 = tf.nn.relu(batch_normal(de_conv(d3, output_shape=[tf.shape(d3)[0], 64, 64, 32], name='gen_deconv4'), scope='gen_bn4', reuse=reuse))
-            print "d4: ", d4
+            print ("d4: ", d4)
             d5 = de_conv(d4, output_shape=[tf.shape(d4)[0], 64, 64, 3], name='gen_deconv5', d_h=1, d_w=1)
-            print "d5: ", d5
+            print ("d5: ", d5)
             return tf.nn.tanh(d5)
 
     def Encode(self, x):
@@ -275,21 +272,21 @@ class vaegan(object):
         with tf.variable_scope('encode') as scope:
 
             conv1 = tf.nn.relu(batch_normal(conv2d(x, output_dim=64, name='e_c1'), scope='e_bn1'))
-            print "en conv1: ", conv1
+            print ("en conv1: ", conv1)
             conv2 = tf.nn.relu(batch_normal(conv2d(conv1, output_dim=128, name='e_c2'), scope='e_bn2'))
-            print "en conv2: ", conv2
+            print ("en conv2: ", conv2)
             conv3 = tf.nn.relu(batch_normal(conv2d(conv2 , output_dim=256, name='e_c3'), scope='e_bn3'))
-            print "en conv3: ", conv3
+            print ("en conv3: ", conv3)
             shape=tf.shape(conv3)[0]
             shape=tf.stack([shape, 256 * 8 * 8])
             conv3 = tf.reshape(conv3, shape)
-            print "en conv3: ", conv3
+            print ("en conv3: ", conv3)
             fc1 = tf.nn.relu(batch_normal(fully_connect(conv3, output_size=1024, scope='e_f1'), scope='e_bn4'))
-            print "fc1: ", fc1
+            print ("fc1: ", fc1)
             z_mean = fully_connect(fc1 , output_size=128, scope='e_f2')
-            print "z_mean: ", z_mean
+            print ("z_mean: ", z_mean)
             z_sigma = fully_connect(fc1, output_size=128, scope='e_f3')
-            print "z_sigma: ", z_sigma
+            print ("z_sigma: ", z_sigma)
             return z_mean, z_sigma
 
     def KL_loss(self, mu, log_var):
