@@ -5,13 +5,13 @@ import scipy
 import scipy.misc
 from PIL import Image
 
-def load_data( data_dir, shape=None, box=[50,50,200,200], need=6000, restrict=-1 ):
+def load_data( data_dir, shape=None, box=None, need=6000, restrict=-1 ):
     img_files = []
-    for root,dirs,files in os.walk( data_dir ):
+    for root,dirs,files in os.walk(data_dir):
         if len(files) == 0:
             continue
-        if len(img_files) < need:
-            img_files.extend( map( lambda f : os.path.join(root,f), files))
+        if len(img_files) <= need:
+            img_files.extend(map(lambda f: os.path.join(root, f), files))
 
     arrs = []
     if restrict < 0:
@@ -24,12 +24,12 @@ def load_data( data_dir, shape=None, box=[50,50,200,200], need=6000, restrict=-1
         if not box == None:
             img = img.crop(box)
         if not shape == None:
-            img = img.resize( shape )
-        arr = np.asarray( img ).astype(np.float32)
+            img = img.resize(shape)
+        arr = np.asarray(img).astype(np.float32)
         # arr = preprocess( arr )
-        arrs.append( arr )
+        arrs.append(arr)
 
-    arrs = np.asarray( arrs ).astype(np.float32)
+    arrs = np.asarray(arrs).astype(np.float32)
 
     return arrs
 

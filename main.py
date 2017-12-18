@@ -33,10 +33,10 @@ if __name__ == "__main__":
     latent_dim = FLAGS.latent_dim
 
     learn_rate_init = FLAGS.learn_rate_init
-    # cb_ob = load_data(FLAGS.path, shape=(64, 64), need=6000)
-    # print ("Loaded train data with shape: ", cb_ob.shape)
-    # print ("Model path: ", model_path)
-    cb_ob = CelebA(FLAGS.path)
+    cb_ob = load_data(FLAGS.path, shape=(64, 64), need=6000)
+    print ("Loaded train data with shape: ", cb_ob.shape)
+    print ("Model path: ", model_path)
+    # cb_ob = CelebA(FLAGS.path)
 
     vaeGan = vaegan(batch_size= batch_size, max_iters= max_iters,
                       model_path= model_path, data_ob=cb_ob, latent_dim= latent_dim,
@@ -48,6 +48,6 @@ if __name__ == "__main__":
 
     else:
         vaeGan.build_model_vaegan()
-        # test_arr = load_data(FLAGS.path, shape=(64, 64), need=500)
-        # print ("Loaded test data with shape: ", test_arr.shape)
+        test_arr = load_data(FLAGS.path, shape=(64, 64), need=500)
+        print ("Loaded test data with shape: ", test_arr.shape)
         vaeGan.test()
