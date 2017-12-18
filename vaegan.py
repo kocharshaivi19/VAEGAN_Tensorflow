@@ -3,7 +3,7 @@ from ops import batch_normal, de_conv, conv2d, fully_connect, lrelu
 from utils import save_images, get_image
 from utils import CelebA
 import numpy as np
-import cv2
+from scipy.misc import imread, imsave
 from tensorflow.python.framework.ops import convert_to_tensor
 import sys
 
@@ -30,7 +30,6 @@ class vaegan(object):
         self.images = tf.placeholder(tf.float32, [None, self.output_size, self.output_size, self.channel], name="images")
         self.ep = tf.placeholder(tf.float32, [None, self.latent_dim])
             # random_normal(shape=[self.batch_size , self.latent_dim])
-        print self.ep
         self.zp = tf.placeholder(tf.float32, [None, latent_dim])
             # .random_normal(shape=[None, self.latent_dim])
         # self.dataset = tf.data.Dataset.from_tensor_slices(
@@ -213,13 +212,11 @@ class vaegan(object):
             save_images(sample_images[0:64], [8, 8], '{}/train_{:02d}_{:04d}_con.png'.format(self.sample_path, 0, 0))
             save_images(real_images[0:64], [8, 8], '{}/train_{:02d}_{:04d}_r.png'.format(self.sample_path, 0, 0))
 
-            ri = cv2.imread('{}/train_{:02d}_{:04d}_r.png'.format(self.sample_path, 0, 0), 1)
-            fi = cv2.imread('{}/train_{:02d}_{:04d}_con.png'.format(self.sample_path, 0, 0), 1)
+            ri = imread('{}/train_{:02d}_{:04d}_r.png'.format(self.sample_path, 0, 0))
+            fi = imread('{}/train_{:02d}_{:04d}_con.png'.format(self.sample_path, 0, 0))
 
-            cv2.imshow('real_image', ri)
-            cv2.imshow('reconstruction', fi)
-
-            cv2.waitKey(-1)
+            imsave('./real_image', ri)
+            imsave('./reconstruction', fi)
 
     def discriminate(self, x_var, reuse=False):
 
