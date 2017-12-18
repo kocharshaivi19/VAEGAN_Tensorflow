@@ -32,16 +32,16 @@ class vaegan(object):
             # random_normal(shape=[self.batch_size , self.latent_dim])
         self.zp = tf.placeholder(tf.float32, [None, latent_dim])
             # .random_normal(shape=[None, self.latent_dim])
-        # self.dataset = tf.data.Dataset.from_tensor_slices(
-        #     convert_to_tensor(self.data_ob.train_data_list, dtype=tf.string))
-        # self.dataset = self.dataset.map(lambda filename : tuple(tf.py_func(self._read_by_function,
-        #                                                                     [filename], [tf.double])), num_parallel_calls=16)
-        # self.dataset = self.dataset.repeat(100)
-        # self.dataset = self.dataset.apply(tf.contrib.data.batch_and_drop_remainder(batch_size))
-        #
-        # self.iterator = tf.data.Iterator.from_structure(self.dataset.output_types, self.dataset.output_shapes)
-        # self.next_x = tf.squeeze(self.iterator.get_next())
-        # self.training_init_op = self.iterator.make_initializer(self.dataset)
+        self.dataset = tf.data.Dataset.from_tensor_slices(
+            convert_to_tensor(self.data_ob.train_data_list, dtype=tf.string))
+        self.dataset = self.dataset.map(lambda filename : tuple(tf.py_func(self._read_by_function,
+                                                                            [filename], [tf.double])), num_parallel_calls=16)
+        self.dataset = self.dataset.repeat(100)
+        self.dataset = self.dataset.apply(tf.contrib.data.batch_and_drop_remainder(batch_size))
+
+        self.iterator = tf.data.Iterator.from_structure(self.dataset.output_types, self.dataset.output_shapes)
+        self.next_x = tf.squeeze(self.iterator.get_next())
+        self.training_init_op = self.iterator.make_initializer(self.dataset)
 
     def build_model_vaegan(self):
 
@@ -141,7 +141,7 @@ class vaegan(object):
             sess.run(init)
 
             # Initialzie the iterator
-            # sess.run(self.training_init_op)
+            sess.run(self.training_init_op)
             summary_op = tf.summary.merge_all()
             summary_writer = tf.summary.FileWriter(self.log_dir, sess.graph)
 
@@ -150,11 +150,11 @@ class vaegan(object):
 
             while step <= self.max_iters:
 
-                # next_x_images = sess.run(self.next_x)
+                next_x_images = sess.run(self.next_x)
                 ep_batch = np.random.uniform(-1, 1, [self.batch_size, self.latent_dim]).astype(np.float32)
                 zp_batch = np.random.uniform(-1, 1, [self.batch_size, self.latent_dim]).astype(np.float32)
-                idx = np.random.randint(len(self.dataset), size=self.batch_size)
-                next_x_images = self.dataset[idx, :, :, :]
+                # idx = np.random.randint(len(self.dataset), size=self.batch_size)
+                # next_x_images = self.dataset[idx, :, :, :]
                 fd ={self.images: next_x_images, self.ep: ep_batch, self.zp: zp_batch}
                 sess.run(opti_E, feed_dict=fd)
                 # optimizaiton G
@@ -192,7 +192,7 @@ class vaegan(object):
             save_path = self.saver.save(sess , self.saved_model_path)
             print ("Model saved in file: %s" % save_path)
 
-    def test(self, test_arr):
+    def test(self):
 
         init = tf.global_variables_initializer()
         config = tf.ConfigProto()
@@ -201,12 +201,12 @@ class vaegan(object):
         with tf.Session(config=config) as sess:
 
             # Initialzie the iterator
-            # sess.run(self.training_init_op)
+            sess.run(self.training_init_op)
 
             sess.run(init)
             self.saver.restore(sess, self.saved_model_path)
-            next_x_images = test_arr
-            # next_x_images = sess.run(self.next_x)
+            # next_x_images = test_arr
+            next_x_images = sess.run(self.next_x)
 
             real_images, sample_images = sess.run([self.images, self.x_tilde], feed_dict={self.images: next_x_images})
             save_images(sample_images[0:64], [8, 8], '{}/train_{:02d}_{:04d}_con.png'.format(self.sample_path, 0, 0))
